@@ -9,8 +9,7 @@
              <li><router-link to='/Login'><i class="far fa-user"></i> Login</router-link></li>
         </ul>
     </nav>
-</template>
-
+</template> 
 <style lang="scss" scoped>
 
 .nav{
