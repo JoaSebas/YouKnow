@@ -1,10 +1,10 @@
 <template>
     <nav class="nav">
         <div>
-            <router-link to='/'><h1 class="logo">You<span class="know">Know</span></h1></router-link>
+            <router-link to='/' exact><h1 class="logo">You<span class="know" >Know</span></h1></router-link>
         </div>
         <ul  class="menu">
-            <li><router-link to='/'><i class="fas fa-home"></i> Inicio</router-link></li>
+            <li><router-link to='/' exact><i class="fas fa-home"></i> Inicio</router-link></li>
             <li><router-link to='/Aprender'><i class="far fa-lightbulb"></i> Aprender</router-link></li>
              <li><router-link to='/Login'><i class="far fa-user"></i> Login</router-link></li>
         </ul>
@@ -43,7 +43,6 @@
 
 
 
-
 .logo{
    font-size: 30px;
    letter-spacing: 3px;
@@ -53,5 +52,11 @@
 .know{
     font-family: 'Black Ops One', cursive;
     font-weight: 300;
+}
+
+
+.menu >li >a.router-link-active {
+     color: #fff;
+    font-weight: 700;
 }
 </style>
