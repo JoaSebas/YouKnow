@@ -72,15 +72,15 @@ router.beforeEach((to,from,next)=>{
 
     let user = firebase.auth().currentUser
     let auth = to.matched.some(ruta=>ruta.meta.auth)
-
+  
     if(auth && !user){
-        next('Login')
-    }else if(!auth && user){
-        next('Welcome')
-    }else{
-      next()
-    }
-
+          next('Login')
+      }
+      else if(!auth && user){
+          next('/Welcome')
+      }else{
+        next()
+      }
 
 
 })

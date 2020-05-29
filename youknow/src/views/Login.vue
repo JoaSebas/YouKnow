@@ -45,6 +45,7 @@ export default {
                 .then(()=>{
                     
                     this.$router.push({name:"Welcome"})
+                      console.log('Sesion Iniciada')
                 })
                 .catch(err=>{
                     console.log('No se pudo iniciar',err)
