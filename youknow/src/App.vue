@@ -54,6 +54,7 @@ input{
   height: 30px;
   width: 200px;
   border: none;
+  cursor: pointer;
 }
 
 
