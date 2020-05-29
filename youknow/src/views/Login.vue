@@ -72,6 +72,8 @@ export default {
         justify-content: center;
         align-items: center;
         height: 100vh;
+        background-image: url('../assets/background/background-form.png');
+        background-size: cover;
     }
 
     .container-login >h1{
@@ -85,6 +87,7 @@ export default {
         border: 1px solid #33cfc1;
         box-shadow: 1px 1px 5px #cbcbcb;
         border-radius: 3px;
+        background: #fff;
     }
 
     .input-group{
