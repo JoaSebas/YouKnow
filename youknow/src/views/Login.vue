@@ -1,5 +1,8 @@
 <template>
     <div class="body-login">
+        <div class="home-header">
+            <router-link to='/' exact><i class="fas fa-home"></i> Inicio</router-link>
+        </div>
         <div class="container-login">
             <h1 class="logo">You<span class="know" >Know</span></h1>
             <div class="form-login">
@@ -120,6 +123,16 @@ export default {
     .btn-registro{
         color: #33cfc1;
         text-align: right;
+    }
+
+    .home-header{
+        position: absolute;
+        left: 20px;
+        top: 20px;
+    }
+
+    .home-header a{
+        font-size: 18px;
     }
 
 </style>
