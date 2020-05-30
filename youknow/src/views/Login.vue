@@ -93,26 +93,10 @@ export default {
         background: #fff;
     }
 
-    .input-group{
-        padding: 10px 0;
-        display: flex;
-        flex-flow: column;
-    }
-
-    .input-group span{
-        color: red;
-    }
-
-    .input-group > label{
-        padding: 5px 0;
-    }
+   
 
 
-    .btn-ingresar{
-            background: #33cfc1;
-            font-weight: 700;
-            font-size: 16px;
-    }
+  
 
     .registro{
         padding: 10px;

@@ -28,7 +28,7 @@
   
 }
 .menu > li{
-    padding: 0 20px;
+    width: 120px;
     color: #fff;
 }
 
