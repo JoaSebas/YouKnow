@@ -34,7 +34,7 @@
           <div class="group-fecha">
             <label for>Mes</label>
             <select class="input-registro " v-model="month">
-              <option v-for="month in months" :key="month">{{month}}</option>
+              <option v-for="month in months" :key="month.value" :value="month.value">{{month.name}}</option>
             </select>
           </div>
           <div class="group-fecha">
@@ -112,6 +112,8 @@
 <script>
 import moment from "moment";
 
+moment.locale('es-Es'); 
+
 export default {
   data() {
     return {
@@ -136,7 +138,6 @@ export default {
   created: function() {
     var date = new Date();
 
-    console.log(date.getDay(), moment(date).format("DD/MM/YYY"));
 
     //dias
     this.days = [];
@@ -150,7 +151,16 @@ export default {
     this.months = [];
 
     for (var m = 1; m <= 12; m++) {
-      this.months.push(m);
+
+        var name= moment().month(m-1).format('MMM');
+
+      var month={
+        value:m,
+        name:name
+      }
+      this.months.push(month);
+
+    
     }
 
     //año
