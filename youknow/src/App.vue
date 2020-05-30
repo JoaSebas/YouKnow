@@ -1,6 +1,5 @@
 <template>
-      <div>
-              <Menu/>
+      <div>           
             <router-view></router-view>
       </div>
    
@@ -8,22 +7,12 @@
 </template>
 
 
-<script>
-
-import Menu from '@/components/Menu'
-
-export default {
-  components:{
-      Menu
-  }
-}
-</script>
 
 <style lang="scss">
   *{
     margin: 0;
     padding: 0;
-    font-family: 'Anonymous Pro', monospace;
+   font-family: 'Dosis', sans-serif;
   }
 
   body{
@@ -38,5 +27,54 @@ export default {
   ul{
     list-style: none;
   }
+
+
+  
+.logo{
+   font-size: 30px;
+   letter-spacing: 3px;
+   font-weight: 700;
+}
+
+.know{
+    font-family: 'Black Ops One', cursive;
+    font-weight: 300;
+}
+
+input{
+  background: #f7f7f7;
+  border: none;
+  height: 30px;
+  width: 190px;
+  border-radius: 3px;
+  padding-left: 10px;
+}
+
+.btn{
+  height: 30px;
+  width: 200px;
+  border: none;
+  cursor: pointer;
+}
+
+ .input-group{
+        padding: 10px 0;
+        display: flex;
+        flex-flow: column;
+    }
+
+    .input-group span{
+        color: red;
+    }
+
+    .input-group > label{
+        padding: 5px 0;
+    }
+
+  .btn-ingresar{
+            background: #33cfc1;
+            font-weight: 700;
+            font-size: 16px;
+    }
 
 </style>

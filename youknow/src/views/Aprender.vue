@@ -1,3 +1,18 @@
 <template>
-    <h1>Aprender</h1>
+        <div>
+            <Menu/>
+            <h1>Aprender</h1>
+        </div>
+    
 </template>
+
+
+<script>
+import Menu from '@/components/Menu'
+
+export default {
+  components:{
+      Menu
+  }
+}
+</script>
