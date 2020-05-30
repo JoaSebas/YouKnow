@@ -1,5 +1,8 @@
 <template>
   <div class="body-registro">
+        <div class="home-header">
+            <router-link to='/' exact><i class="fas fa-home"></i> Inicio</router-link>
+        </div>
     <div class="container-registro">
       <h1 class="logo">
         You
@@ -153,14 +156,17 @@ export default {
     //año
 
     this.years = [];
-
+    var listYear=[]
     for (var y = 1905; y <= date.getFullYear(); y++) {
-      this.years.push(y);
+      listYear.push(y);
     }
+
+    this.years = listYear.sort((a,b)=>{return b-a})
+
 
     this.day = moment(date).format("DD");
     this.month = moment(date).format("M");
-    this.year = 1905;
+    this.year = 1992;
   }
 };
 </script>
@@ -174,6 +180,16 @@ export default {
   justify-content: center;
   align-items: center;
 }
+   .home-header{
+        position: absolute;
+        left: 20px;
+        top: 20px;
+    }
+
+    .home-header a{
+        font-size: 18px;
+        color: #fff;
+    }
 
 .container-registro > h1 {
   text-align: center;
