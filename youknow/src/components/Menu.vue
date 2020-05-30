@@ -42,6 +42,19 @@
 }
 
 
+
+.logo{
+   font-size: 30px;
+   letter-spacing: 3px;
+   font-weight: 700;
+}
+
+.know{
+    font-family: 'Black Ops One', cursive;
+    font-weight: 300;
+}
+
+
 .menu >li >a.router-link-active {
      color: #fff;
     font-weight: 700;

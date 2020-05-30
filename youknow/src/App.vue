@@ -1,11 +1,23 @@
 <template>
       <div>
-           
+              <Menu/>
             <router-view></router-view>
       </div>
    
   
 </template>
+
+
+<script>
+
+import Menu from '@/components/Menu'
+
+export default {
+  components:{
+      Menu
+  }
+}
+</script>
 
 <style lang="scss">
   *{
@@ -26,33 +38,5 @@
   ul{
     list-style: none;
   }
-
-  
-.logo{
-   font-size: 30px;
-   letter-spacing: 3px;
-   font-weight: 700;
-}
-
-.know{
-    font-family: 'Black Ops One', cursive;
-    font-weight: 300;
-}
-input{
-  background :#eee;
-  border:none;
-  height: 30px;
-  width: 200px;
-  border-radius: 3px;
- 
-
-}
-
-.btn{
-height: 30px;
-width: 200px;
-border:none;
-}
-
 
 </style>
