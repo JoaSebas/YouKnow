@@ -274,11 +274,12 @@ export default {
 .tag-radio {
   position: absolute;
   background: #f7f7f7;
-  height: 20px;
-  width: 20px;
+  height: 15px;
+  width: 15px;
   border: 1px solid #33cfc1;
   border-radius: 3px;
   left: 40%;
+  cursor: pointer;
 }
 
 .radio input:checked ~ .tag-radio {
@@ -296,10 +297,10 @@ export default {
 }
 
 .radio .tag-radio:after {
-  left: 6px;
-  top: 2px;
-  width: 5px;
-  height: 10px;
+  left: 4px;
+  top: 0px;
+  width: 4px;
+  height: 9px;
   border: solid white;
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
