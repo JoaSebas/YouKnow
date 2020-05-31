@@ -56,6 +56,7 @@
           <label for>
             Correo
             <span v-if="valido==false && correo==''">*</span>
+            <span v-if="existe==true">Correo existente</span>
           </label>
           <input class="input-registro" type="text" v-model="correo" />
         </div>
@@ -69,24 +70,25 @@
         <div class="input-group">
           <label for>
             Verificar Contraseña
-            <span v-if="valido==false && verrifPass==''">*</span>
+            <span v-if="valido==false && verifPass==''">*</span>
+            <span v-if="igualPass == false">Las contraseñas no coinciden</span>
           </label>
           <input class="input-registro" type="password" v-model="verifPass" />
         </div>
 
         <div class="input-group check">
-          <div class="group-check">
+          <!-- <div class="group-check">
             <label for="premium">Premium</label>
             <label class="radio">
-              <input type="radio" id="premium" value="premium" v-model="cuenta" />
-              <span for="premium" class="tag-radio"></span>
+              <input type="radio" value="Premium" v-model="cuenta" />
+              <span class="tag-radio"></span>
             </label>
-          </div>
+          </div> -->
           <div class="group-check">
             <label for="free">Normal</label>
             <label class="radio">
-              <input type="radio" id="free" value="free" v-model="cuenta" />
-              <span for="free" class="tag-radio"></span>
+              <input type="radio"  value="Free" v-model="cuenta" />
+              <span  class="tag-radio"></span>
             </label>
           </div>
         </div>
@@ -96,7 +98,8 @@
                    <router-link class="link-login" to="/Login">Login</router-link>
             </div>
             <div>
-                   <button class="btn btn-ingresar">Crear</button>
+                    <button v-if="cargando==true" class="btn btn-ingresar"><i class="fas fa-spinner fa-spin"></i></button>
+                   <button v-if="cargando==false" class="btn btn-ingresar" @click="registrar()">Crear</button>
             </div>
         </div>
      
@@ -110,7 +113,10 @@
 </template>
 
 <script>
+
+import {db,auth} from '@/firebase/firebase.js'
 import moment from "moment";
+
 
 moment.locale('es-Es'); 
 
@@ -123,7 +129,7 @@ export default {
 
       day: 1,
       month: 1,
-      year: 1,
+      year: 2000,
 
       nombre: "",
       apellido: "",
@@ -132,10 +138,14 @@ export default {
       pass: "",
       verifPass: "",
       valido: null,
-      cuenta: "free"
+      cuenta: "Free",
+
+      igualPass:null,
+      cargando:false,
+      existe:false
     };
   },
-  created: function() {
+  created() {
     var date = new Date();
 
 
@@ -158,6 +168,7 @@ export default {
         value:m,
         name:name
       }
+
       this.months.push(month);
 
     
@@ -177,7 +188,115 @@ export default {
     this.day = moment(date).format("DD");
     this.month = moment(date).format("M");
     this.year = 1992;
-  }
+  },
+  methods: {
+    async registrar (){
+
+        this.cargando=true;
+
+        if(this.nombre && this.apellido&&this.correo&&this.pass && this.verifPass){
+
+           if(this.pass !== this.verifPass){
+               this.igualPass=false;
+                 this.cargando=false;
+               
+           }else{
+                this.igualPass=true;
+
+                //validar si existe correo
+
+                    this.existe = await db.collection('users').where('email',"==",this.correo).get()
+                                  .then(resp=>{
+
+                                      var arr=[]
+
+                                          resp.forEach(user=>{
+
+                                              arr.push(user.data())
+
+                                          })
+
+                                      if(arr.length >0){
+                                          return true 
+                                      }
+
+                                      return false
+
+                                  }).catch(err=>console.log(err))
+
+                //
+
+                      if(this.existe==false){
+
+                     
+                            await auth.createUserWithEmailAndPassword(this.correo,this.pass)
+                              .then(async resp=>{
+
+                              var role=  await db.collection('role').where('name','==',this.cuenta).get().then(rol=>{
+                                
+                                    var arr =[]
+                                          rol.forEach(e => {
+                                                arr.push(e.id)
+                                            });
+                                  return arr[0]
+                                  
+                              })
+
+                                var user ={
+                                  name:this.nombre,
+                                  lastName:this.apellido,
+                                  email:this.correo,
+                                  birthday:this.day +"."+this.month+"."+this.year,
+                                  genre:this.genero,
+                                  role: role
+                                }
+                                
+                      
+                                await  db.collection('users').doc(resp.user.uid).set(user)
+                                  .then(()=>{
+                                    console.log('usuario creado en la base de datos');
+                                  })
+
+
+                                  .catch(err=>{
+                                    console.log(err);
+                                  })
+
+
+                              })
+                              .catch(err=>{
+                                console(err);
+                              })
+
+                            await auth.signOut()
+                              .catch(err=>{
+                                console.log(err);
+                              })
+
+
+                        
+                              this.$router.push('/Login');
+                                this.cargando=false;
+
+                       }else{
+
+                         this.existe=true;
+                          this.cargando=false;
+                       }
+                 
+           }
+
+         
+          this.valido=true;
+            
+        }else{
+         
+          this.valido=false;
+          this.cargando=false;
+        }
+
+    }
+  },
 };
 </script>
 
@@ -266,6 +385,7 @@ export default {
 .check {
   display: flex;
   flex-flow: row;
+  justify-content: flex-end;
 }
 
 .group-check {

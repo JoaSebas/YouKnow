@@ -15,7 +15,8 @@
                     <input type="password" v-model="pass">
                 </div>
                
-                <button class="btn btn-ingresar" @click="ingresar()">Ingresar</button>
+                  <button v-if="cargando==true" class="btn btn-ingresar"><i class="fas fa-spinner fa-spin"></i></button>
+                <button v-if="cargando==false" class="btn btn-ingresar" @click="ingresar()">Ingresar</button>
             </div>
             <div class="registro">
                 <router-link to="/Registro" class="btn-registro">Registrarse</router-link>
@@ -27,24 +28,26 @@
 </template>
 
 <script>
-import  '@/firebase/firebase.js'
-import firebase from 'firebase'
+
+import {auth} from  '@/firebase/firebase.js'
 
 export default {
     data(){
         return{
             user:"",
             pass:"",
-            valido:null
+            valido:null,
+            cargando:false
         }
     },
     methods: {
-        ingresar(){
+       async  ingresar(){
 
+                this.cargando=true;
             if(this.user!="" && this.pass!=""){             
                   this.valido=true;
 
-                firebase.auth().signInWithEmailAndPassword(this.user,this.pass)
+                await auth.signInWithEmailAndPassword(this.user,this.pass)
                 .then(()=>{
                     
                     this.$router.push({name:"Welcome"})
@@ -55,8 +58,11 @@ export default {
                 })
 
 
+                this.cargando=false;
+
             }else{
                     this.valido=false;
+                      this.cargando=false;
             }
 
            
