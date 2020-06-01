@@ -27,8 +27,7 @@
 </template>
 
 <script>
-import  '@/firebase/firebase.js'
-import firebase from 'firebase'
+import {auth} from '@/firebase/firebase.js'
 
 export default {
     data(){
@@ -44,7 +43,7 @@ export default {
             if(this.user!="" && this.pass!=""){             
                   this.valido=true;
 
-                firebase.auth().signInWithEmailAndPassword(this.user,this.pass)
+                auth.signInWithEmailAndPassword(this.user,this.pass)
                 .then(()=>{
                     
                     this.$router.push({name:"Welcome"})
