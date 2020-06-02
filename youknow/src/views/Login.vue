@@ -43,7 +43,7 @@ export default {
 
             if(this.user!="" && this.pass!=""){             
                   this.valido=true;
-
+                    
                 firebase.auth().signInWithEmailAndPassword(this.user,this.pass)
                 .then(()=>{
                     

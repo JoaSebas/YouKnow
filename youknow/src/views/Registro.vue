@@ -69,7 +69,8 @@
         <div class="input-group">
           <label for>
             Verificar Contraseña
-            <span v-if="valido==false && verrifPass==''">*</span>
+            <span v-if="valido==false && verifPass==''">*</span>
+            <span v-if="igualPass == false">Las contraseñas no coinciden</span>
           </label>
           <input class="input-registro" type="password" v-model="verifPass" />
         </div>
@@ -78,14 +79,14 @@
           <div class="group-check">
             <label for="premium">Premium</label>
             <label class="radio">
-              <input type="radio" id="premium" value="premium" v-model="cuenta" />
+              <input type="radio" id="premium" value="Premium" v-model="cuenta" />
               <span for="premium" class="tag-radio"></span>
             </label>
           </div>
           <div class="group-check">
             <label for="free">Normal</label>
             <label class="radio">
-              <input type="radio" id="free" value="free" v-model="cuenta" />
+              <input type="radio" id="free" value="Free" v-model="cuenta" />
               <span for="free" class="tag-radio"></span>
             </label>
           </div>
@@ -96,7 +97,8 @@
                    <router-link class="link-login" to="/Login">Login</router-link>
             </div>
             <div>
-                   <button class="btn btn-ingresar">Crear</button>
+                    <button v-if="cargando==true" class="btn btn-ingresar"><i class="fas fa-spinner fa-spin"></i></button>
+                   <button v-if="cargando==false"  class="btn btn-ingresar" @click="registrar()" >Crear</button>
             </div>
         </div>
      
@@ -110,7 +112,10 @@
 </template>
 
 <script>
+
+import {db,auth} from '@/firebase/firebase.js'
 import moment from "moment";
+
 
 moment.locale('es-Es'); 
 
@@ -132,7 +137,9 @@ export default {
       pass: "",
       verifPass: "",
       valido: null,
-      cuenta: "free"
+      cuenta: "Free",
+      igualPass: null,
+      cargando:false
     };
   },
   created: function() {
@@ -177,7 +184,71 @@ export default {
     this.day = moment(date).format("DD");
     this.month = moment(date).format("M");
     this.year = 1992;
+  },
+methods:{
+async registrar(){
+
+  this.cargando=true;
+
+    if(this.nombre && this.apellido && this.correo && this.pass && this.verifPass){
+      if(this.pass !== this.verifPass){
+       this.igualPass=false
+      }else{
+        this.igualPass=true;
+
+
+         await auth.createUserWithEmailAndPassword(this.correo, this.pass)
+      .then(async resp=>{
+
+        var role = await db.collection('role').where('name','==',this.cuenta).get().then(rol=>{
+          var arr = []
+          rol.forEach(e =>{
+              arr.push(e.id)
+          })
+
+          return arr[0]
+
+        })
+
+        var user ={
+          name:this.nombre,
+          lastName:this.apellido,
+          email:this.correo,
+          birthday:this.day+"."+this.month+"."+this.year,
+          genre:this.genero,
+          role:role
+        }
+        console.log("usuario creado",resp.user.uid)
+        await db.collection('users').doc(resp.user.uid).set(user)
+        .then(()=>{
+          console.log('Usuario creado en la base de datos')
+        })
+
+        db.collection('roles').doc(resp.user.uid).set()
+      })
+      .catch(err=>{
+        console.log(err)
+      })
+      await auth.signOut()
+      .catch(err=>{
+        console.log(err)
+      })
+
+          this.$router.push({name:"Login"})
+          this.cargando=false
+
+      }
+      this.valido=true;
+
+
+    
+    }else{
+      console.log("sin registro")
+      this.valido=false;
+      this.cargando=false
+    }
   }
+},
 };
 </script>
 
@@ -363,4 +434,5 @@ export default {
   font-weight: 300;
   font-size: 35px;
 }
+
 </style>
