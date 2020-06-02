@@ -56,6 +56,7 @@
           <label for>
             Correo
             <span v-if="valido==false && correo==''">*</span>
+            <span v-if="existe==true">Correo existente</span>
           </label>
           <input class="input-registro" type="text" v-model="correo" />
         </div>
@@ -76,18 +77,18 @@
         </div>
 
         <div class="input-group check">
-          <div class="group-check">
+          <!-- <div class="group-check">
             <label for="premium">Premium</label>
             <label class="radio">
-              <input type="radio" id="premium" value="Premium" v-model="cuenta" />
-              <span for="premium" class="tag-radio"></span>
+              <input type="radio" value="Premium" v-model="cuenta" />
+              <span class="tag-radio"></span>
             </label>
-          </div>
+          </div> -->
           <div class="group-check">
             <label for="free">Normal</label>
             <label class="radio">
-              <input type="radio" id="free" value="Free" v-model="cuenta" />
-              <span for="free" class="tag-radio"></span>
+              <input type="radio"  value="Free" v-model="cuenta" />
+              <span  class="tag-radio"></span>
             </label>
           </div>
         </div>
@@ -98,7 +99,7 @@
             </div>
             <div>
                     <button v-if="cargando==true" class="btn btn-ingresar"><i class="fas fa-spinner fa-spin"></i></button>
-                   <button v-if="cargando==false"  class="btn btn-ingresar" @click="registrar()" >Crear</button>
+                   <button v-if="cargando==false" class="btn btn-ingresar" @click="registroApi()">Crear</button>
             </div>
         </div>
      
@@ -128,7 +129,7 @@ export default {
 
       day: 1,
       month: 1,
-      year: 1,
+      year: 2000,
 
       nombre: "",
       apellido: "",
@@ -138,11 +139,13 @@ export default {
       verifPass: "",
       valido: null,
       cuenta: "Free",
-      igualPass: null,
-      cargando:false
+
+      igualPass:null,
+      cargando:false,
+      existe:false
     };
   },
-  created: function() {
+  created() {
     var date = new Date();
 
 
@@ -165,6 +168,7 @@ export default {
         value:m,
         name:name
       }
+
       this.months.push(month);
 
     
@@ -181,74 +185,168 @@ export default {
     this.years = listYear.sort((a,b)=>{return b-a})
 
 
-    this.day = moment(date).format("DD");
+    this.day = moment(date).format("D");
     this.month = moment(date).format("M");
     this.year = 1992;
   },
-methods:{
-async registrar(){
+  methods: {
+    async registrar (){
 
-  this.cargando=true;
+        this.cargando=true;
 
-    if(this.nombre && this.apellido && this.correo && this.pass && this.verifPass){
-      if(this.pass !== this.verifPass){
-       this.igualPass=false
-      }else{
-        this.igualPass=true;
+        if(this.nombre && this.apellido&&this.correo&&this.pass && this.verifPass){
+
+           if(this.pass !== this.verifPass){
+               this.igualPass=false;
+                 this.cargando=false;
+               
+           }else{
+                this.igualPass=true;
+
+                //validar si existe correo
+
+                    this.existe = await db.collection('users').where('email',"==",this.correo).get()
+                                  .then(resp=>{
+
+                                      var arr=[]
+
+                                          resp.forEach(user=>{
+
+                                              arr.push(user.data())
+
+                                          })
+
+                                      if(arr.length >0){
+                                          return true 
+                                      }
+
+                                      return false
+
+                                  }).catch(err=>console.log(err))
+
+                //
+
+                      if(this.existe==false){
+
+                     
+                            await auth.createUserWithEmailAndPassword(this.correo,this.pass)
+                              .then(async resp=>{
+
+                              var role=  await db.collection('role').where('name','==',this.cuenta).get().then(rol=>{
+                                
+                                    var arr =[]
+                                          rol.forEach(e => {
+                                                arr.push(e.id)
+                                            });
+                                  return arr[0]
+                                  
+                              })
+
+                                var user ={
+                                  name:this.nombre,
+                                  lastName:this.apellido,
+                                  email:this.correo,
+                                  birthday:this.day +"."+this.month+"."+this.year,
+                                  genre:this.genero,
+                                  role: role
+                                }
+                                
+                      
+                                await  db.collection('users').doc(resp.user.uid).set(user)
+                                  .then(()=>{
+                                    console.log('usuario creado en la base de datos');
+                                  })
 
 
-         await auth.createUserWithEmailAndPassword(this.correo, this.pass)
-      .then(async resp=>{
+                                  .catch(err=>{
+                                    console.log(err);
+                                  })
 
-        var role = await db.collection('role').where('name','==',this.cuenta).get().then(rol=>{
-          var arr = []
-          rol.forEach(e =>{
-              arr.push(e.id)
-          })
 
-          return arr[0]
+                              })
+                              .catch(err=>{
+                                console(err);
+                              })
 
-        })
+                            await auth.signOut()
+                              .catch(err=>{
+                                console.log(err);
+                              })
 
-        var user ={
-          name:this.nombre,
-          lastName:this.apellido,
-          email:this.correo,
-          birthday:this.day+"."+this.month+"."+this.year,
-          genre:this.genero,
-          role:role
+
+                        
+                              this.$router.push('/Login');
+                                this.cargando=false;
+
+                       }else{
+
+                         this.existe=true;
+                          this.cargando=false;
+                       }
+                 
+           }
+
+         
+          this.valido=true;
+            
+        }else{
+         
+          this.valido=false;
+          this.cargando=false;
         }
-        console.log("usuario creado",resp.user.uid)
-        await db.collection('users').doc(resp.user.uid).set(user)
-        .then(()=>{
-          console.log('Usuario creado en la base de datos')
-        })
 
-        db.collection('roles').doc(resp.user.uid).set()
-      })
-      .catch(err=>{
-        console.log(err)
-      })
-      await auth.signOut()
-      .catch(err=>{
-        console.log(err)
-      })
+    },
 
-          this.$router.push({name:"Login"})
-          this.cargando=false
+    async registroApi(){
+              if(this.nombre && this.apellido&&this.correo&&this.pass && this.verifPass){
 
+           if(this.pass !== this.verifPass){
+               this.igualPass=false;
+                 this.cargando=false;
+               
+           }else{
+
+                this.valido = true;
+
+                  var user ={
+                    nombre:this.nombre,
+                    apellido:this.apellido,
+                    correo:this.correo,
+                    fechaNacimiento:this.month +"/"+this.day+"/"+this.year,
+                    genero:this.genero,
+                    contrasena: this.pass
+                  }
+                const options={
+                  method:"POST",
+                  body:JSON.stringify(user),
+                  headers:{
+                    Accept:"application/json",
+                    "Content-Type":"application/json; chartset=utf-8"
+                  }
+                }
+
+                var url = "http://localhost:51743/";
+                var uri = url+"api/user/createUser";
+
+                await fetch(uri,options)
+                .then(resp=>{
+                  console.log(resp.ok)
+                  if(resp.ok){
+                     this.$router.push('/Login');
+                                this.cargando=false;
+                  }
+                })
+                .catch(err=>{
+                  console.log(err)
+                })
+
+           } 
+              }else{
+                this.valido=false;
+                this.cargando=false;
+              }
       }
-      this.valido=true;
-
-
-    
-    }else{
-      console.log("sin registro")
-      this.valido=false;
-      this.cargando=false
-    }
-  }
-},
+  },
 };
 </script>
 
@@ -337,6 +435,7 @@ async registrar(){
 .check {
   display: flex;
   flex-flow: row;
+  justify-content: flex-end;
 }
 
 .group-check {
@@ -434,5 +533,4 @@ async registrar(){
   font-weight: 300;
   font-size: 35px;
 }
-
 </style>
