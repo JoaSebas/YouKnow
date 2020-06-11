@@ -55,8 +55,9 @@
         <div class="input-group">
           <label for>
             Correo
-            <span v-if="valido==false && correo==''">*</span>
+            <span v-if="valido==false && correo==''">*</span> 
             <span v-if="existe==true">Correo existente</span>
+            <span v-if="formatEmail == false">Formato incorrecto</span>
           </label>
           <input class="input-registro" type="text" v-model="correo" />
         </div>
@@ -87,7 +88,7 @@
           <div class="group-check">
             <label for="free">Normal</label>
             <label class="radio">
-              <input type="radio"  value="Free" v-model="cuenta" />
+              <input type="radio"  :value="true" v-model="cuenta" />
               <span  class="tag-radio"></span>
             </label>
           </div>
@@ -99,7 +100,7 @@
             </div>
             <div>
                     <button v-if="cargando==true" class="btn btn-ingresar"><i class="fas fa-spinner fa-spin"></i></button>
-                   <button v-if="cargando==false" class="btn btn-ingresar" @click="registrar()">Crear</button>
+                   <button v-if="cargando==false" class="btn btn-ingresar" @click="registrarApi()">Crear</button>
             </div>
         </div>
      
@@ -114,7 +115,7 @@
 
 <script>
 
-import {db,auth} from '@/firebase/firebase.js'
+/*import {db,auth} from '@/firebase/firebase.js'*/
 import moment from "moment";
 
 
@@ -138,11 +139,13 @@ export default {
       pass: "",
       verifPass: "",
       valido: null,
-      cuenta: "Free",
+      cuenta: true,
 
       igualPass:null,
       cargando:false,
-      existe:false
+      existe:false,
+
+      formatEmail:null
     };
   },
   created() {
@@ -185,12 +188,12 @@ export default {
     this.years = listYear.sort((a,b)=>{return b-a})
 
 
-    this.day = moment(date).format("DD");
+    this.day = moment(date).format("D");
     this.month = moment(date).format("M");
     this.year = 1992;
   },
   methods: {
-    async registrar (){
+    /*async registrar (){
 
         this.cargando=true;
 
@@ -293,6 +296,102 @@ export default {
          
           this.valido=false;
           this.cargando=false;
+        }
+
+    },*/
+
+    async registrarApi(){
+
+       this.cargando=true;
+
+        if(this.apellido&&this.correo&&this.pass && this.verifPass){
+
+          var validateEmail =/^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i; 
+
+          if(validateEmail.test(this.correo)){
+            
+
+              this.formatEmail = true
+         
+
+                if(this.pass !== this.verifPass){
+                    this.igualPass=false;
+                      this.cargando=false;
+                    
+                }else{
+
+                    this.valido=true;
+                      
+                        var user ={
+                                        name:this.nombre,
+                                        lastName:this.apellido,
+                                        email:this.correo,
+                                        birthday:this.month +"/"+this.day+"/"+this.year,
+                                        genre:this.genero,
+                                        pass: this.pass,
+                                        account:this.cuenta
+                          }
+
+
+                        const options={
+                          method:"POST",
+                          body:JSON.stringify(user),
+                          headers:{
+                            Accept:"application/json",
+                            "Content-Type":"application/json; charset=utf-8"
+                          }
+
+                        };
+
+                      var url ="http://localhost:50892/";
+
+                      var uri= url + "api/user/registerUser"
+
+
+                      await fetch(uri,options)
+                      .then(async resp=>{
+
+                            var data = await resp.json()
+
+                            console.log(data)
+
+                            
+
+                              if(data.status ==200 && data.code=='exists-email'){
+                                  this.existe =true
+                                   this.cargando=false;
+     
+                              }
+
+                              if(data.status ==200 && data.code=='register'){ 
+                                                         
+                                      this.$router.push('/Login');
+                                    this.cargando=false;
+     
+
+                              }
+                              if(resp.status==404){
+                                  console.log('Algo salio')
+                              }
+                         
+                      })
+                      .catch(err=>{
+                        console.log(err,'Fallo conexion')
+                          this.cargando=false;
+                      })
+
+                    
+                
+                }
+              }else{
+                 this.formatEmail = false
+                this.valido=false;
+                this.cargando=false;
+             }
+        }
+        else{          
+                this.valido=false;
+                this.cargando=false;
         }
 
     }
