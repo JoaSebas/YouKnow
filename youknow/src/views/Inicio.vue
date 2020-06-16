@@ -1,7 +1,8 @@
 <template>
     <div>
         <Menu/>
-        <h1>Inicio</h1>
+        <h1>Bienvenido al Sistema youKnow</h1>
+        <span @click="logout()">LogOut</span>
     </div>
    
 </template>
@@ -10,8 +11,14 @@
 import Menu from '@/components/Menu'
 
 export default {
-  components:{
+  /*components:{
       Menu
+  }*/
+  methods:{
+      logout(){
+        this.$cookies.remove('user');
+        this.$router.push({name:"Inicio"});
+      }     
   }
 }
 </script>

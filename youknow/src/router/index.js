@@ -7,7 +7,7 @@ import Registro from '../views/Registro.vue'
 
 
 //AUTH VIEWS
-import firebase from 'firebase'
+//import firebase from 'firebase'
 import Welcome from '../views/Auth/Inicio.vue'
 
 
@@ -67,10 +67,10 @@ const router = new VueRouter({
 
 
 
-router.beforeEach((to,from,next)=>{
+/*router.beforeEach((to,from,next)=>{
   document.title = to.meta.title
 
-    let user = firebase.auth().currentUser
+    //let user = firebase.auth().currentUser
     let auth = to.matched.some(ruta=>ruta.meta.auth)
   
     if(auth && !user){
@@ -81,8 +81,14 @@ router.beforeEach((to,from,next)=>{
       }else{
         next()
       }
+      if(auth)
+      {
+        next('Login')
+      }else{
+        next()
+      }
 
 
-})
+})*/
 
 export default router
