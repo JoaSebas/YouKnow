@@ -7,8 +7,13 @@ import Registro from '../views/Registro.vue'
 
 
 //AUTH VIEWS
-import firebase from 'firebase'
-import Welcome from '../views/Auth/Inicio.vue'
+
+import Dashboard from '../views/Auth/Dashboard.vue'
+
+import Perfil from '../views/Auth/Dashboard/Perfil.vue'
+//import Welcome from '../views/Auth/Inicio.vue'
+
+
 
 
 Vue.use(VueRouter)
@@ -47,13 +52,24 @@ Vue.use(VueRouter)
     }
   },
   {
-    path: '/Welcome',
-    name: 'Welcome',
-    component: Welcome,
+    path: '/Perfil',
+    name: 'Dashboard',
+    component: Dashboard,
     meta:{
-      title:"Cuenta You Know",
+      title:"Home",
       auth:true
-    }
+    },
+    children:[
+      {
+        path: '/Perfil/:user',
+        name: 'perfilUser',
+        component: Perfil,
+        meta:{
+          title:"Perfil",
+          auth:true
+        },
+      }
+    ]
   },
 
 
@@ -67,11 +83,15 @@ const router = new VueRouter({
 
 
 
+
+
 router.beforeEach((to,from,next)=>{
   document.title = to.meta.title
 
-    let user = firebase.auth().currentUser
+    let user = window.$cookies.get('user')
     let auth = to.matched.some(ruta=>ruta.meta.auth)
+
+  
   
     if(auth && !user){
           next('Login')

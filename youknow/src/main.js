@@ -2,13 +2,15 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import firebase from 'firebase'
+import cookies from 'vue-cookies'
+
 
 Vue.config.productionTip = false
 
+Vue.use(cookies);
+
 let app = null
 
-firebase.auth().onAuthStateChanged(()=>{
 
   if(!app){
     app= new Vue({
@@ -17,6 +19,3 @@ firebase.auth().onAuthStateChanged(()=>{
       render: h => h(App)
     }).$mount('#app')
   }
- 
-
-})
