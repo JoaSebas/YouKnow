@@ -105,7 +105,7 @@ export default {
 
                                             };
 
-                                        var url ="http://localhost:50892/";
+                                        var url ="http://localhost:62040/";
 
                                         var uri= url + "api/user/loginUser"
 
@@ -135,7 +135,7 @@ export default {
 
                                                                   this.invalidUser = false
 
-                                                                  this.$router.push({name:"Welcome"})
+                                                                  this.$router.push({name:"Dashboard"})
                                                                      console.log('Sesion Iniciada')
                                                         }
 

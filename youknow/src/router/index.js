@@ -8,7 +8,10 @@ import Registro from '../views/Registro.vue'
 
 //AUTH VIEWS
 
-import Welcome from '../views/Auth/Inicio.vue'
+import Dashboard from '../views/Auth/Dashboard.vue'
+
+import Perfil from '../views/Auth/Dashboard/Perfil.vue'
+//import Welcome from '../views/Auth/Inicio.vue'
 
 
 
@@ -49,13 +52,24 @@ Vue.use(VueRouter)
     }
   },
   {
-    path: '/Welcome',
-    name: 'Welcome',
-    component: Welcome,
+    path: '/Perfil',
+    name: 'Dashboard',
+    component: Dashboard,
     meta:{
-      title:"Cuenta You Know",
+      title:"Home",
       auth:true
-    }
+    },
+    children:[
+      {
+        path: '/Perfil/:user',
+        name: 'perfilUser',
+        component: Perfil,
+        meta:{
+          title:"Perfil",
+          auth:true
+        },
+      }
+    ]
   },
 
 
